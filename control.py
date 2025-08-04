@@ -33,6 +33,7 @@ class Controller:
         # 在子线程中运行异步任务
         Thread(target=start_async, daemon=True).start()
 
+    # 点击实践
     def btnClick(self,evt):
         def start_async():
             def update_button_state(state):
@@ -49,9 +50,9 @@ class Controller:
         # 在子线程中运行异步任务
         Thread(target=start_async, daemon=True).start()
 
+    # 拆分章节并生成语音
     async def generateAll(self):
         content = self.ui.tk_text_content.get("1.0", "end")
-        # voice = "zh-CN-YunxiNeural"
         path = os.getcwd() + '\\media\\'
         voice = self.ui.tk_select_box_voicebox.get()
 
@@ -86,6 +87,7 @@ class Controller:
         self.app.after(0, self.ui.tk_text_log.insert("end", f"全部完成\n"))
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
 
+    # 初始化声音下拉框
     async def comboboxInit(self):
         voices = await ttsUtils.getVoices()
         self.ui.tk_select_box_voicebox['values'] = voices

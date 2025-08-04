@@ -1,5 +1,5 @@
 import edge_tts
-import textUtils
+from utils import textUtils
 from edge_tts import VoicesManager
 
 
