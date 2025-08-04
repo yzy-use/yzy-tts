@@ -1,8 +1,8 @@
 import edge_tts
 import textUtils
-import asyncio
 from edge_tts import VoicesManager
-import torch
+
+
 # from TTS.api import TTS
 
 async def getVoices():

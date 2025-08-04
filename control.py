@@ -4,14 +4,12 @@
 QQ交流群:905019785
 在线反馈:https://support.qq.com/product/618914
 """
-import logging
 import os
 import time
 import tkinter
 from threading import Thread
 import asyncio
-import textUtils
-import ttsUtils
+from utils import ttsUtils, textUtils
 
 class Controller:
     # 导入UI类后，替换以下的 object 类型，将获得 IDE 属性提示功能

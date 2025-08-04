@@ -6,9 +6,6 @@ QQ交流群:905019785
 """
 # 导入布局文件
 from ui import Win as MainWin
-import tkinter as tk
-# 导入窗口控制器
-from control import Controller as MainUIController
 
 # 将窗口控制器 传递给UI
 app = MainWin()
