@@ -75,13 +75,13 @@ class WinGUI(Tk):
         return btn
     def __tk_text_log(self,parent):
         text = Text(parent)
-        text.place(x=920, y=10, width=300, height=500)
+        text.place(x=920, y=50, width=300, height=500)
         self.create_bar(parent, text,True, False, 920, 10, 300,500,1230,720)
         return text
     def __tk_select_box_voicebox(self, parent):
         cb = Combobox(parent, state="readonly", )
         cb['values'] = ("列表框", "Python", "Tkinter Helper")
-        cb.place(x=920, y=520, width=300, height=30)
+        cb.place(x=920, y=10, width=300, height=30)
         return cb
 class Win(WinGUI):
     def __init__(self):

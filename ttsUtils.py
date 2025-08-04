@@ -1,18 +1,17 @@
 import edge_tts
 import textUtils
-
+import asyncio
+from edge_tts import VoicesManager
 import torch
 # from TTS.api import TTS
 
+async def getVoices():
+    voices = await VoicesManager.create()
+    voice = voices.find(Language="zh")
+    voice = tuple(item['ShortName'] for item in voice)
+    return voice
 
 async def generateMp3(content, voice, file_name) -> None:
-    # start_time = time.time()
-    # isSuccess = "成功"
-    # try:
-    #     await edge_tts.Communicate(content, voice).save(file_name)
-    # except Exception as e:
-    #     isSuccess = "失败"
-
     chunks = textUtils.split_text_by_length(content)
     with  open(file_name, "wb") as file:
         for text in chunks:
@@ -27,9 +26,6 @@ async def generateMp3(content, voice, file_name) -> None:
 
         # with open(SRT_FILE, "w", encoding="utf-8") as file:
         #     file.write(submaker.get_srt())
-
-    # end_time = time.time()  # 记录结束时间
-    # elapsed_time = end_time - start_time
 
 # def generateByCoqui(content, voice, file_name) -> None:
 #     # Get device

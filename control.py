@@ -4,15 +4,11 @@
 QQ交流群:905019785
 在线反馈:https://support.qq.com/product/618914
 """
+import logging
 import os
 import time
 import tkinter
 from threading import Thread
-import edge_tts
-
-
-
-# import edge_tts
 import asyncio
 import textUtils
 import ttsUtils
@@ -31,17 +27,18 @@ class Controller:
         # 组件初始化 赋值操作
         self.ui.tk_text_log.config(state=tkinter.DISABLED)
 
-        # # 初始化声音列表
-        # edge_tts.voices
-
-
+        def start_async():
+            # 在子线程中运行异步任务
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.comboboxInit())
+        # 在子线程中运行异步任务
+        Thread(target=start_async, daemon=True).start()
 
     def btnClick(self,evt):
-
         def start_async():
             def update_button_state(state):
                 self.ui.tk_button_generateBtn.config(state=state)  # 更新按钮状态
-
             self.app.after(0,update_button_state(tkinter.DISABLED))
 
             # 在子线程中运行异步任务
@@ -56,8 +53,9 @@ class Controller:
 
     async def generateAll(self):
         content = self.ui.tk_text_content.get("1.0", "end")
-        voice = "zh-CN-YunxiNeural"
+        # voice = "zh-CN-YunxiNeural"
         path = os.getcwd() + '\\media\\'
+        voice = self.ui.tk_select_box_voicebox.get()
 
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
         self.app.after(0, self.ui.tk_text_log.delete("1.0","end"))
@@ -89,3 +87,8 @@ class Controller:
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
         self.app.after(0, self.ui.tk_text_log.insert("end", f"全部完成\n"))
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+    async def comboboxInit(self):
+        voices = await ttsUtils.getVoices()
+        self.ui.tk_select_box_voicebox['values'] = voices
+        self.ui.tk_select_box_voicebox.set('zh-CN-YunxiNeural')
