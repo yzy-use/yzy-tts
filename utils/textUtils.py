@@ -103,7 +103,7 @@ def merge_chapters_with_limit(chapters, max_length=20000):
 # def chinese_to_number(text):
 #     return cn2an.cn2an(text.string)
 
-
+# 支持多种中文数字格式转换
 def convert_chinese_number(text):
     """
     全面支持多种中文数字格式转换：
