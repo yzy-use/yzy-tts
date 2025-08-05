@@ -75,6 +75,8 @@ class Controller:
 
             start_time = time.time()
             # 核心
+            # 创建文件夹（如果不存在）
+            os.makedirs(os.path.dirname(path), exist_ok=True)
             await ttsUtils.generateMp3(chunk['content'], voice, path + chunk['name'] + '.mp3')
             end_time = time.time()  # 记录结束时间
             elapsed_time = end_time - start_time
