@@ -4,7 +4,7 @@ from typing import Any
 # 替换特殊符号
 def replace_symbols_with_space(text):
     # 定义要替换的符号模式
-    pattern = r'[@#$%^&()~`;:\'_<>\/]'
+    pattern = r'[@#$%^&*()~`;:\'_<>\/]'
     # 使用正则表达式替换为空格
     result = re.sub(pattern, ' ', text)
     return result
@@ -27,7 +27,7 @@ def split_text_by_chapters(text):
             如果无章节，返回 [{"title": "", "content": "全文内容"}]
     """
     # 使用正则表达式匹配 "第.*章" 及其后的内容（非贪婪模式）
-    pattern = r'(第[^\n\r]+章[^\n\r]*)'
+    pattern = r'(第[^\n\r]+[卷章节回][^\n\r]*)'
     chapters = re.split(pattern, text)
 
     # 处理分割结果
@@ -38,8 +38,9 @@ def split_text_by_chapters(text):
         result.append({"title": title, "content": title + "\n" + content})
 
     # 如果没有章节，返回全文
+
     if not result:
-        result.append({"title": "", "content": text.strip()})
+        result.append({"title": "全文", "content": text.strip()})
 
     return result
 
