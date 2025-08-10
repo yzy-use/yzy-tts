@@ -27,7 +27,7 @@ def split_text_by_chapters(text):
             如果无章节，返回 [{"title": "", "content": "全文内容"}]
     """
     # 使用正则表达式匹配 "第.*章" 及其后的内容（非贪婪模式）
-    pattern = r'(第[^\n\r]+[卷章节回][^\n\r]*)'
+    pattern = r'(第[^\n\r]+[卷章节][^\n\r]*)'
     chapters = re.split(pattern, text)
 
     # 处理分割结果
