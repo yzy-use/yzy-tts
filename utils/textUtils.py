@@ -34,6 +34,9 @@ def split_text_by_chapters(text):
     result = []
     for i in range(1, len(chapters), 2):
         title = chapters[i].strip()
+        sp = chapters[i].strip().split()
+        sp[0] = convert_chinese_number(sp[0])
+        title = ' '.join(sp)
         content = chapters[i + 1].strip() if i + 1 < len(chapters) else ""
         result.append({"title": title, "content": title + "\n" + content})
 

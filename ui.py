@@ -20,7 +20,7 @@ class WinGUI(Tk):
         self.tk_text_log = self.__tk_text_log(self)
         self.tk_select_box_voicebox = self.__tk_select_box_voicebox(self)
     def __win(self):
-        self.title("Tkinter布局助手")
+        self.title("yzy-tts")
         # 设置窗口大小、居中
         width = 1230
         height = 720

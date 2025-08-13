@@ -60,7 +60,7 @@ class Controller:
         self.app.after(0, self.ui.tk_text_log.delete("1.0","end"))
         self.app.after(0, self.ui.tk_text_log.insert("end", f"开始生成语音\n"))
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
-        # 替换一些符号
+        # 替换特殊符号
         content = textUtils.replace_symbols_with_space(content)
         # 拆分文本
         chapters = textUtils.split_text_by_chapters(content)
@@ -68,7 +68,6 @@ class Controller:
         merged_sections = textUtils.merge_chapters_with_limit(chapters)
 
         for chunk in merged_sections:
-            chunk['name'] = textUtils.convert_chinese_number(chunk['name'])
             self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
             self.app.after(0, self.ui.tk_text_log.insert("end", f"【{chunk['name']}】\n"))
             self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
