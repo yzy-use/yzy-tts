@@ -4,7 +4,7 @@ from typing import Any
 # 替换特殊符号
 def replace_symbols_with_space(text):
     # 定义要替换的符号模式
-    pattern = r'[@#$%^&*()~`;:\'_<>\/]'
+    pattern = r'[@#$%^&*＊()~`;:\'_<>\/]'
     # 使用正则表达式替换为空格
     result = re.sub(pattern, ' ', text)
     return result
@@ -27,13 +27,16 @@ def split_text_by_chapters(text):
             如果无章节，返回 [{"title": "", "content": "全文内容"}]
     """
     # 使用正则表达式匹配 "第.*章" 及其后的内容（非贪婪模式）
-    pattern = r'(第[^\n\r]+[卷章节] [^\n\r]*)'
+    # 数字 [零一二三四五六七八九十百\d]+
+
+    pattern = r'(第[零一二三四五六七八九十百\d]+[卷章节集][^\n\r]*)'
+    # pattern = r'(【[\d]+】[^\n\r]*)'
     chapters = re.split(pattern, text)
 
     # 处理分割结果
     result = []
     for i in range(1, len(chapters), 2):
-        title = chapters[i].strip()
+        # title = chapters[i].strip()
         sp = chapters[i].strip().split()
         sp[0] = convert_chinese_number(sp[0])
         title = ' '.join(sp)
@@ -48,7 +51,7 @@ def split_text_by_chapters(text):
     return result
 
 # 合并章节文本，每段不超过指定长度，并标注章节范围
-def merge_chapters_with_limit(chapters, max_length=20000):
+def merge_chapters_with_limit(chapters, max_length=23000):
     """
     合并章节文本，每段不超过指定长度，并标注章节范围
 
