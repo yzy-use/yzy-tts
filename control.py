@@ -29,7 +29,7 @@ class Controller:
             # 在子线程中运行异步任务
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(self.comboboxInit())
+            # loop.run_until_complete(self.comboboxInit())
         # 在子线程中运行异步任务
         Thread(target=start_async, daemon=True).start()
 
@@ -44,6 +44,23 @@ class Controller:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             loop.run_until_complete(self.generateAll())
+
+            self.app.after(0, update_button_state(tkinter.NORMAL))
+
+        # 在子线程中运行异步任务
+        Thread(target=start_async, daemon=True).start()
+
+    # 生成 HTML 的按钮事件
+    def btnClickHtml(self,evt):
+        def start_async():
+            def update_button_state(state):
+                self.ui.tk_button_generateHtmlBtn.config(state=state)  # 更新按钮状态
+            self.app.after(0,update_button_state(tkinter.DISABLED))
+
+            # 在子线程中运行异步任务
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.generateAllHtml())
 
             self.app.after(0, update_button_state(tkinter.NORMAL))
 
@@ -82,6 +99,83 @@ class Controller:
 
             self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
             self.app.after(0, self.ui.tk_text_log.insert("end", f"\n【{chunk['name']}】 (字符数: {len(chunk['content'])}) （运行时常：{elapsed_time:.4f}） 成功\n"))
+            self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"全部完成\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+    # 批量导出 HTML
+    async def generateAllHtml(self):
+        content = self.ui.tk_text_content.get("1.0", "end")
+        base_path = os.getcwd() + '\\media\\'
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.delete("1.0","end"))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"开始生成HTML\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+        # 替换特殊符号
+        content = textUtils.replace_symbols_with_space(content)
+        # 拆分文本
+        chapters = textUtils.split_text_by_chapters(content)
+        # 合并为 HTML 内容
+        merged_sections = textUtils.merge_chapters_with_limit_html(chapters)
+
+        # 创建文件夹（如果不存在）
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
+
+        for chunk in merged_sections:
+            name = chunk['name']
+            html = chunk['content']
+            file_path = base_path + name + '.html'
+
+            start_time = time.time()
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(html)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+
+            self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+            self.app.after(0, self.ui.tk_text_log.insert("end", f"\n【{name}】（运行时常：{elapsed_time:.4f}） 成功\n"))
+            self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"全部完成\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+    async def generateAllTxt(self):
+        content = self.ui.tk_text_content.get("1.0", "end")
+        base_path = os.getcwd() + '\\media\\'
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.delete("1.0","end"))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"开始生成HTML\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+        # 替换特殊符号
+        content = textUtils.replace_symbols_with_space(content)
+        # 拆分文本
+        chapters = textUtils.split_text_by_chapters(content)
+        # 合并为 HTML 内容
+        merged_sections = textUtils.merge_chapters_with_limit(chapters)
+
+        # 创建文件夹（如果不存在）
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
+
+        for chunk in merged_sections:
+            name = chunk['name']
+            html = chunk['content']
+            file_path = base_path + name + '.txt'
+
+            start_time = time.time()
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(html)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+
+            self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+            self.app.after(0, self.ui.tk_text_log.insert("end", f"\n【{name}】（运行时常：{elapsed_time:.4f}） 成功\n"))
             self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
 
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))

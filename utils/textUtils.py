@@ -107,6 +107,68 @@ def merge_chapters_with_limit(chapters, max_length=23000):
     return merged
 
 
+# 生成与 merge_chapters_with_limit 相同的分段，但将 content 转为 HTML 结构
+def merge_chapters_with_limit_html(chapters, max_length=23000):
+    """
+    基于 merge_chapters_with_limit 的合并规则，输出每段的 HTML 内容。
+
+    返回结构：[{"name": "第1章-第3章", "content": "<html>..."}, ...]
+    HTML 模板示例：
+    <html >
+    <head>
+    	<h2 style="padding: 0;margin: 0;">title内容</h2>
+        <div style="white-space: break-spaces;">\tcontent内容<div>
+    </body>
+    </html>
+    """
+    merged = merge_chapters_with_limit(chapters, max_length)
+    html_chunks = []
+    for item in merged:
+        range_title = item.get("name", "")
+        body = item.get("content", "")
+
+        # 将合并后的 body 再次按章节切分，确保每个章节标题都是 <h2>
+        pattern = r'(第[零一二三四五六七八九十百\d]+[卷章节集][^\n\r]*)'
+        parts = re.split(pattern, body)
+
+        sections_html = []
+        for i in range(1, len(parts), 2):
+            chap_title = parts[i].strip()
+            chap_content = parts[i + 1].strip() if i + 1 < len(parts) else ""
+            sections_html.append(
+                "    <h1>" + chap_title + "</h1>\n" +
+                "    <div class=\"content\">" + chap_content + "</div>\n"
+            )
+
+        # 如果没有匹配到章节标题，则整体作为一段内容输出
+        if not sections_html and body.strip():
+            sections_html.append(
+                "    <div class=\"content\">" + body.strip() + "</div>\n"
+            )
+
+        html = (
+            "<!DOCTYPE html>\n"
+            "<html>\n"
+            "<head>\n"
+            "    <meta charset=\"utf-8\" />\n"
+            "    <style>\n"
+            "        body {background-color: #cce8cf;}\n"
+            "        .content { white-space: break-spaces; text-indent: 2em;font-size:24px;}\n"
+            "    </style>\n"
+            "</head>\n"
+            "<body>\n"
+            + ''.join(sections_html) +
+            "</body>\n"
+            "</html>"
+        )
+
+        html_chunks.append({
+            "name": range_title,
+            "content": html
+        })
+
+    return html_chunks
+
 # def chinese_to_number(text):
 #     return cn2an.cn2an(text.string)
 

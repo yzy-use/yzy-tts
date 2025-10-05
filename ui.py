@@ -17,6 +17,7 @@ class WinGUI(Tk):
         self.__win()
         self.tk_text_content = self.__tk_text_content(self)
         self.tk_button_generateBtn = self.__tk_button_generateBtn(self)
+        self.tk_button_generateHtmlBtn = self.__tk_button_generateHtmlBtn(self)
         self.tk_text_log = self.__tk_text_log(self)
         self.tk_select_box_voicebox = self.__tk_select_box_voicebox(self)
     def __win(self):
@@ -73,6 +74,10 @@ class WinGUI(Tk):
         btn = Button(parent, text="按钮", takefocus=False,)
         btn.place(x=1100, y=670, width=120, height=40)
         return btn
+    def __tk_button_generateHtmlBtn(self,parent):
+        btn = Button(parent, text="生成HTML", takefocus=False,)
+        btn.place(x=970, y=670, width=120, height=40)
+        return btn
     def __tk_text_log(self,parent):
         text = Text(parent)
         text.place(x=920, y=50, width=300, height=500)
@@ -92,6 +97,7 @@ class Win(WinGUI):
         self.ctl.init(self)
     def __event_bind(self):
         self.tk_button_generateBtn.bind('<Button-1>',self.ctl.btnClick)
+        self.tk_button_generateHtmlBtn.bind('<Button-1>',self.ctl.btnClickHtml)
         pass
     def __style_config(self):
         pass
