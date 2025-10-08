@@ -29,7 +29,7 @@ class Controller:
             # 在子线程中运行异步任务
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            # loop.run_until_complete(self.comboboxInit())
+            loop.run_until_complete(self.comboboxInit())
         # 在子线程中运行异步任务
         Thread(target=start_async, daemon=True).start()
 
@@ -142,6 +142,56 @@ class Controller:
 
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
         self.app.after(0, self.ui.tk_text_log.insert("end", f"全部完成\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+    # 合并 HTML 的按钮事件
+    def btnClickMergeHtml(self, evt):
+        def start_async():
+            def update_button_state(state):
+                self.ui.tk_button_mergeHtmlBtn.config(state=state)  # 更新按钮状态
+            self.app.after(0, update_button_state(tkinter.DISABLED))
+
+            # 在子线程中运行异步任务
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.generateMergedHtml())
+
+            self.app.after(0, update_button_state(tkinter.NORMAL))
+
+        # 在子线程中运行异步任务
+        Thread(target=start_async, daemon=True).start()
+
+    # 生成合并的 HTML 文件
+    async def generateMergedHtml(self):
+        content = self.ui.tk_text_content.get("1.0", "end")
+        base_path = os.getcwd() + '\\media\\'
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.delete("1.0", "end"))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"开始生成合并HTML\n"))
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
+
+        # 替换特殊符号
+        content = textUtils.replace_symbols_with_space(content)
+        # 拆分文本
+        chapters = textUtils.split_text_by_chapters(content)
+        
+        # 创建文件夹（如果不存在）
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
+
+        start_time = time.time()
+        # 生成合并的 HTML
+        merged_html = textUtils.create_merged_html_with_pagination(chapters)
+        file_path = base_path + '完整小说.html'
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(merged_html)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+
+        self.app.after(0, self.ui.tk_text_log.config(state=tkinter.NORMAL))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"合并HTML生成完成（运行时常：{elapsed_time:.4f}）\n"))
+        self.app.after(0, self.ui.tk_text_log.insert("end", f"文件保存至：{file_path}\n"))
         self.app.after(0, self.ui.tk_text_log.config(state=tkinter.DISABLED))
 
     async def generateAllTxt(self):
