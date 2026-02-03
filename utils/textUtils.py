@@ -4,7 +4,7 @@ from typing import Any
 # 替换特殊符号
 def replace_symbols_with_space(text):
     # 定义要替换的符号模式
-    pattern = r'[@#$%^&*＊()~`;:\'_<>\/]'
+    pattern = r'[@#$^&*＊()~`;:\'_<>\/?!，。、；：""''（）【】《》〈〉「」『』]'
     # 使用正则表达式替换为空格
     result = re.sub(pattern, ' ', text)
     return result
@@ -29,7 +29,7 @@ def split_text_by_chapters(text):
     # 使用正则表达式匹配 "第.*章" 及其后的内容（非贪婪模式）
     # 数字 [零一二三四五六七八九十百\d]+
 
-    pattern = r'(第[零一二三四五六七八九十百\d]+[卷章节集][^\n\r]*)'
+    pattern = r'((?:序章|楔子|第[零一二两三四五六七八九十百\d]+[章])[^\n\r]*)'
     # pattern = r'(【[\d]+】[^\n\r]*)'
     chapters = re.split(pattern, text)
 
@@ -84,8 +84,11 @@ def merge_chapters_with_limit(chapters, max_length=23000):
         # 如果当前块不为空且加入新章节后超限，则保存当前块
         if current_chunk and current_length + chapter_length > max_length:
             end_chapter = current_chunk[-1]["title"]
+            # 过滤掉特殊符号
+            clean_start_chapter = replace_symbols_with_space(start_chapter).strip()
+            clean_end_chapter = replace_symbols_with_space(end_chapter).strip()
             merged.append({
-                "name": f"{start_chapter}-{end_chapter}",
+                "name": f"{clean_start_chapter}-{clean_end_chapter}",
                 "content": "\n\n".join([chap["content"] for chap in current_chunk])
             })
             # 重置当前块
@@ -99,8 +102,11 @@ def merge_chapters_with_limit(chapters, max_length=23000):
     # 添加最后一块
     if current_chunk:
         end_chapter = current_chunk[-1]["title"]
+        # 过滤掉特殊符号
+        clean_start_chapter = replace_symbols_with_space(start_chapter).strip()
+        clean_end_chapter = replace_symbols_with_space(end_chapter).strip()
         merged.append({
-            "name": f"{start_chapter}-{end_chapter}",
+            "name": f"{clean_start_chapter}-{clean_end_chapter}",
             "content": "\n\n".join([chap["content"] for chap in current_chunk])
         })
 
@@ -128,7 +134,7 @@ def merge_chapters_with_limit_html(chapters, max_length=23000):
         body = item.get("content", "")
 
         # 将合并后的 body 再次按章节切分，确保每个章节标题都是 <h2>
-        pattern = r'(第[零一二三四五六七八九十百\d]+[卷章节集][^\n\r]*)'
+        pattern = r'(第[零一二三四五六七八九十百\d]+[卷章节集话][^\n\r]*)'
         parts = re.split(pattern, body)
 
         sections_html = []
@@ -653,15 +659,15 @@ def convert_chinese_number(text):
     # 完整数字映射
     digit_map = {
         '零': '0', '〇': '0',
-        '一': '1', '二': '2', '三': '3', '四': '4', '五': '5',
-        '六': '6', '七': '7', '八': '8', '九': '9',
+        '一': '1', '二': '2', '两': '2', '三': '3', '四': '4',
+        '五': '5', '六': '6', '七': '7', '八': '8', '九': '9',
         '十': '10', '百': '100', '千': '1000', '万': '10000'
     }
 
     def repl(match):
         cn_num = match.group(1)
         # 处理纯连续数字（如 一零三）
-        if all(c in ['零', '〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'] for c in cn_num):
+        if all(c in ['零', '〇', '一', '二', '两', '三', '四', '五', '六', '七', '八', '九'] for c in cn_num):
             return ''.join(digit_map[c] for c in cn_num)
 
         # 处理带单位的数字
@@ -679,7 +685,7 @@ def convert_chinese_number(text):
         return str(total)
 
     # 匹配模式：支持多种中文数字格式
-    pattern = r'([零〇一二三四五六七八九十百千万]+)'
+    pattern = r'([零〇一二两三四五六七八九十百千万]+)'
     return re.sub(pattern, repl, text)
 
 
